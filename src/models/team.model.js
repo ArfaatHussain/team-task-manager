@@ -1,5 +1,5 @@
 import { sequelize } from '../config/database.js';
-import { DataTypes } from 'sequelize';
+import { DataTypes, where } from 'sequelize';
 
 
 const Team = sequelize.define('Team', {
@@ -21,6 +21,10 @@ Team.beforeDestroy(async (team, options) => {
     { teamId: null },
     { where: { teamId: team.id }, transaction: options.transaction }
   );
+  await Task.update(
+    {teamId: null},
+    {where: {teamId: team.id}, transaction: options.transaction}
+  )
 });
 
 
