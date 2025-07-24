@@ -18,6 +18,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  teamId: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
   refreshToken: {
     type: DataTypes.STRING,
     allowNull: true,

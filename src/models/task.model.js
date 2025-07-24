@@ -16,6 +16,14 @@ const Task = sequelize.define('Task', {
   dueDate: {
     type: DataTypes.DATE,
   },
+  teamId: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  assignedTo: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  }
 }, {
   timestamps: true,
 });

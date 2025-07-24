@@ -1,18 +1,19 @@
 import { Team } from "../models/team.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-const createTeam = asyncHandler( async(req,res)=>{
-    const {name, creatorId} = req.body;
+const createTeam = asyncHandler(async (req, res) => {
+    const { name, creatorId } = req.body;
 
-    if(!name || !creatorId){
-        throw new ApiError(400,"provide all fields")
-    } 
+    if (!name || !creatorId) {
+        throw new ApiError(400, "provide all fields")
+    }
 
-    const isTeamExist = await Team.findOne({where: {name: name}})
+    const isTeamExist = await Team.findOne({ where: { name: name } })
 
-    if(isTeamExist){
-        throw new ApiError(409,"Team already exist with this name")
+    if (isTeamExist) {
+        throw new ApiError(409, "Team already exist with this name")
     }
 
     await Team.create({
@@ -23,6 +24,22 @@ const createTeam = asyncHandler( async(req,res)=>{
     res.status(201).json({
         message: "success"
     })
-} )
+})
 
-export {createTeam}
+const getTeams = asyncHandler(async (req, res) => {
+    const teams = await Team.findAll({
+        include: [
+            {
+                model: User,
+                as: 'creator' 
+            }
+        ]
+    });
+
+    res.status(200).json({
+        message: "success",
+        data: teams
+    })
+})
+
+export { createTeam, getTeams }
