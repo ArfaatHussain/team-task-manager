@@ -1,5 +1,5 @@
 import { connectDatabase, sequelize } from "./config/database.js";
-import express from "express";
+import { app } from "./app.js";
 import dotenv from "dotenv"
 
 dotenv.config({
@@ -14,12 +14,8 @@ async function startDB() {
 
 startDB()
 
-const app = express()
-
 const port = process.env.PORT
 
 app.listen(port, () => {
     console.log("Server is running on Port ", port);
 })
-
-export { app }
