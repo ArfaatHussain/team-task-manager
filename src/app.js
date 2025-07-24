@@ -14,8 +14,9 @@ app.use(express.json())
 app.use(cookieParser())
 
 import { userRouter } from "./routes/user.route.js";
+import { teamRouter } from "./routes/team.route.js";
 
 app.use("/user",userRouter)
-
+app.use("/team",teamRouter)
 
 export {app}
