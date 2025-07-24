@@ -103,4 +103,27 @@ const loginUser = asyncHandler(async (req, res) => {
     })
 })
 
-export { registerUser, loginUser }
+const getUserProfile = asyncHandler( async(req,res)=>{
+    const {userId} = req.params
+    
+    if(!userId){
+        throw new ApiError(400,"User ID is missing")
+    }
+
+    const user = await User.findByPk(userId)
+
+    if(!user){
+        throw new ApiError(404,"User not found")
+    }
+
+    const userObj = user.toJSON()
+
+    delete userObj.password;
+
+    res.status(200).json({
+        message: "success",
+        data: userObj
+    })
+} )
+
+export { registerUser, loginUser, getUserProfile }
