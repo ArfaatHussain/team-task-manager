@@ -16,4 +16,12 @@ const Team = sequelize.define('Team', {
   timestamps: true,
 });
 
+Team.beforeDestroy(async (team, options) => {
+  await User.update(
+    { teamId: null },
+    { where: { teamId: team.id }, transaction: options.transaction }
+  );
+});
+
+
 export {Team}
