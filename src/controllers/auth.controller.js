@@ -107,38 +107,46 @@ const loginUser = asyncHandler(async (req, res) => {
     })
 })
 
-const logoutUser = asyncHandler( async(req,res)=>{
+const logoutUser = asyncHandler(async (req, res) => {
     const user = req.user;
 
-    await User.update({refreshToken: null},{where: {id: user.id}})
+    await User.update({ refreshToken: null }, { where: { id: user.id } })
 
     res.status(200).json({
         message: "success"
     })
-} )
+})
 
 
-const refreshAccessToken = asyncHandler( async(req,res)=>{
+const refreshAccessToken = asyncHandler(async (req, res) => {
 
-    const encryptedRefreshToken = req.cookies.accessToken || req.headers["authorization"]?.replace("bearer ","")
+    const encryptedRefreshToken = req.cookies.refreshToken || req.headers["authorization"]?.replace(/^Bearer\s+/i, "");
 
-    if(!encryptedToken){
-        throw new ApiError(400,"Access Token is missing")
+
+    if (!encryptedRefreshToken) {
+        throw new ApiError(400, "Access Token is missing")
     }
 
-    const decodedToken = jwt.verify(encryptedToken, process.env.ACCESS_TOKEN_SECRET)
-
-    const user = await User.findByPk(decodedToken.id)
-
-    if(!user){
-        throw new ApiError(404,"User not found for this refresh token")
+    let decodedRefreshToken;
+    try {
+        decodedRefreshToken = jwt.verify(encryptedRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+        console.error("JWT Verify Error:", error);
+        throw new ApiError(401, "Refresh token invalid or expired");
     }
 
-    if(user.refreshToken != decodedToken ){
-        throw new ApiError(401,"Invalid refresh token")
+
+    const user = await User.findByPk(decodedRefreshToken.id)
+
+    if (!user) {
+        throw new ApiError(404, "User not found for this refresh token")
     }
 
-    const {accessToken,refreshToken} = await generateRefreshAndAccessToken(user)
+    if (user.refreshToken != encryptedRefreshToken) {
+        throw new ApiError(401, "Invalid refresh token")
+    }
+
+    const { accessToken, refreshToken } = await generateRefreshAndAccessToken(user)
 
     user.refreshToken = refreshToken
 
@@ -147,15 +155,17 @@ const refreshAccessToken = asyncHandler( async(req,res)=>{
     res.status(200).json({
         message: "success",
         data: [
-            accessToken,
-            refreshToken
+            {
+            accessToken: accessToken,
+            refreshToken: refreshToken
+            }
         ]
     })
 
-} )
+})
 
 export {
-    refreshAccessToken, 
+    refreshAccessToken,
     registerUser,
     loginUser,
     logoutUser
