@@ -60,4 +60,19 @@ User.prototype.generateAccessToken = function () {
   )
 }
 
+import { Task } from './task.model.js';
+
+User.beforeUpdate(async (user, options) => {
+  if (user.changed('teamId') && user.teamId === null) {
+    await Task.update(
+      { assignedTo: null },
+      {
+        where: { assignedTo: user.id },
+        transaction: options.transaction 
+      }
+    );
+  }
+});
+
+
 export { User }

@@ -32,7 +32,7 @@ const getTeams = asyncHandler(async (req, res) => {
             {
                 model: User,
                 as: 'creator',
-                attributes: ['id','username', 'email']
+                attributes: ['id', 'username', 'email']
             }
         ]
     });
@@ -65,7 +65,7 @@ const getTeamDetails = asyncHandler(async (req, res) => {
     if (team.length === 0) {
         throw new ApiError(404, "Team not found")
     }
-    
+
 
     res.status(200).json({
         message: "success",
@@ -86,8 +86,8 @@ const addUser = asyncHandler(async (req, res) => {
     if (user.teamId == teamId) {
         throw new ApiError(409, "User is already a member of this team");
     }
-    if(user.teamId != null ){
-        throw new ApiError(409,"User is already in another team")
+    if (user.teamId != null) {
+        throw new ApiError(409, "User is already in another team")
     }
     user.teamId = teamId
     await user.save()
@@ -98,47 +98,47 @@ const addUser = asyncHandler(async (req, res) => {
 
 })
 
-const deleteTeam = asyncHandler( async(req,res)=>{
-    const {teamId,creatorId} = req.body
+const deleteTeam = asyncHandler(async (req, res) => {
+    const { teamId, creatorId } = req.body
 
-    if(!teamId || !creatorId){
-        throw new ApiError(400,"Provide all fields")
+    if (!teamId || !creatorId) {
+        throw new ApiError(400, "Provide all fields")
     }
 
     const team = await Team.findByPk(teamId)
-    if(!team){
-        throw new ApiError(404,"Team not found")
+    if (!team) {
+        throw new ApiError(404, "Team not found")
     }
 
-    if(team.createdBy != creatorId){
-        throw new ApiError(401,"Only team creator can delete it")
+    if (team.createdBy != creatorId) {
+        throw new ApiError(401, "Only team creator can delete it")
     }
 
     await Team.destroy({
-        where: {id: teamId}
+        where: { id: teamId }
     })
 
     res.status(200).json({
         message: "success"
     })
 
-} )
+})
 
-const updateTeam = asyncHandler( async(req,res)=>{
-    const {creatorId, teamId, name} = req.body
+const updateTeam = asyncHandler(async (req, res) => {
+    const { creatorId, teamId, name } = req.body
 
-    if(!creatorId || !teamId || !name){
-        throw new ApiError(400,"Provide all fields")
+    if (!creatorId || !teamId || !name) {
+        throw new ApiError(400, "Provide all fields")
     }
 
     const team = await Team.findByPk(teamId)
 
-    if(!team){
-        throw new ApiError(404,"Team not found")
+    if (!team) {
+        throw new ApiError(404, "Team not found")
     }
 
-    if(team.createdBy != creatorId){
-        throw new ApiError(401,"Only team creator can update it.")
+    if (team.createdBy != creatorId) {
+        throw new ApiError(401, "Only team creator can update it.")
     }
 
     team.name = name;
@@ -147,41 +147,49 @@ const updateTeam = asyncHandler( async(req,res)=>{
     res.status(200).json({
         message: "success"
     })
-} )
+})
 
-const removeUser = asyncHandler( async(req,res)=>{
-    const {teamId, userId, creatorId} = req.body
+const removeUser = asyncHandler(async (req, res) => {
+    const { teamId, userId, creatorId } = req.body
 
-    if(!teamId || !userId || !creatorId){
-        throw new ApiError(400,"Provide all fields")
+    if (!teamId || !userId || !creatorId) {
+        throw new ApiError(400, "Provide all fields")
     }
 
-    const user = await User.findOne({
-        where: {id: userId},
+    const team = await Team.findOne({
+        where: { id: teamId },
         include: [{
-            model: Team,
-            as: 'createdTeams'
-        }]
+            model: User,
+            as: 'creator',
+            attributes: ['id', 'username', 'email']
+        },
+        {
+            model: User,
+            as: 'members',
+            attributes: ['id', 'username']
+        }
+        ]
     })
 
-    if(!user){
-        throw new ApiError(404,"User not found")
+    if (team.creator.id != creatorId) {
+        throw new ApiError(401, "Only creator can remove user")
     }
 
-    const isValidCreator = user.createdTeams.some((item)=>item.createdBy === creatorId)
+    const isUserToBeRemovedExist = team.members.some((member) => member.id == userId)
 
-    if(!isValidCreator){
-        throw new ApiError(401,"Only creator can remove user")
+    if (!isUserToBeRemovedExist) {
+        throw new ApiError(404, "User not found in this team")
     }
-    if(user.teamId !== teamId){
-        throw new ApiError(401,"User does not exist in this team")
-    }
+
+    const user = await User.findByPk(userId);
+    user.teamId = null;
+    await user.save();
+
 
     res.status(200).json({
         message: "success",
-        data: user
     })
 
-} )
+})
 
 export { createTeam, getTeams, getTeamDetails, addUser, deleteTeam, updateTeam, removeUser }
