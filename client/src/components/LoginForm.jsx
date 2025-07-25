@@ -13,10 +13,11 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true)
     try {
-      await login(email, password)
-      // alert("Login Success")
+      const response = await login(email, password)
       setLoading(false)
-      navigate("/dashboard")
+      if(response.status == 200){
+        navigate("/dashboard")
+      }
     } catch (error) {
       if (error.status == 401) {
         setErrorMessage("Invalid email or password")
@@ -81,7 +82,7 @@ function LoginForm() {
           </div>
         </form>
 
-        <p class="mt-10 text-center text-sm/6 text-gray-500">
+        <p class="mt-10 text-center text-sm text-gray-500">
           Not a member?
           <a href="/register" class="font-semibold text-indigo-600 hover:text-indigo-500 ml-2">Register yourself</a>
         </p>
