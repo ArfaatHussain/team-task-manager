@@ -94,6 +94,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     user.refreshToken = refreshToken
     await user.save()
+    const options = {
+        httponly: true,
+        secure: true
+    }
     const responseData = {
         id: user.id,
         username,
@@ -101,10 +105,13 @@ const loginUser = asyncHandler(async (req, res) => {
         accessToken,
         refreshToken
     }
-    res.status(200).json({
-        message: "success",
-        data: responseData
-    })
+    res.status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json({
+            message: "success",
+            data: responseData
+        })
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -112,9 +119,16 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     await User.update({ refreshToken: null }, { where: { id: user.id } })
 
-    res.status(200).json({
-        message: "success"
-    })
+    const options = {
+        httponly: true,
+        secure: true
+    }
+    res.status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json({
+            message: "Logged out successfully"
+        })
 })
 
 
@@ -156,8 +170,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         message: "success",
         data: [
             {
-            accessToken: accessToken,
-            refreshToken: refreshToken
+                accessToken: accessToken,
+                refreshToken: refreshToken
             }
         ]
     })
