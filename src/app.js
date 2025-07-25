@@ -15,8 +15,10 @@ app.use(cookieParser())
 
 import { userRouter } from "./routes/user.route.js";
 import { teamRouter } from "./routes/team.route.js";
+import { taskRouter } from "./routes/task.route.js";
 
 app.use("/user",userRouter)
 app.use("/team",teamRouter)
+app.use("/task",taskRouter)
 
 export {app}
