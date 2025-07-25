@@ -23,6 +23,10 @@ const Task = sequelize.define('Task', {
   assignedTo: {
     type: DataTypes.INTEGER,
     allowNull: true
+  },
+  creator: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
 }, {
   timestamps: true,

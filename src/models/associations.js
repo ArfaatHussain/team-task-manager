@@ -13,6 +13,8 @@ Team.hasMany(User, { foreignKey: 'teamId', as: 'members' });
 Task.belongsTo(Team, { foreignKey: 'teamId', as: 'assignedTeam' });
 Team.hasMany(Task, { foreignKey: 'teamId' });
 
+Task.belongsTo(User,{foreignKey: 'creator', as: "taskCreator"})
+User.hasMany(Task, { foreignKey: 'creator', as: 'createdTasks' });
 
 Task.belongsTo(User, { foreignKey: 'assignedTo', as: 'assignedUser' });
 User.hasMany(Task, { foreignKey: 'assignedTo', as: 'assignedTasks' });

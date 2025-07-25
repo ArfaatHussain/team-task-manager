@@ -6,9 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const create = asyncHandler( async(req,res)=>{
 
-    const {title,description,dueDate, teamId, assignedTo} = req.body;
+    const {title,description,dueDate, teamId, assignedTo, creatorId} = req.body;
 
-    if(!title || !description || !dueDate || !teamId || !assignedTo){
+    if(!title || !description || !dueDate || !teamId || !assignedTo || !creatorId){
         throw new ApiError(400,"Provide all fields")
     }
 
@@ -34,7 +34,8 @@ const create = asyncHandler( async(req,res)=>{
         description,
         dueDate: new Date(dueDate) ,
         teamId,
-        assignedTo
+        assignedTo,
+        creatorId
     })
 
     res.status(201).json({
@@ -89,6 +90,35 @@ const getTaskDetails = asyncHandler( async(req,res)=>{
     })
 } )
 
+const deleteTask = asyncHandler( async(req,res)=>{
+    const {taskId, creatorId} = req.body;
+
+    if(!taskId || !creatorId){
+        throw new ApiError(400,"Provide all fields")
+    }
+
+    const task = await Task.findByPk(taskId)
+
+    if(!task){
+        throw new ApiError(404,"Task not found")
+    }
+
+    if(task.creator != creatorId){
+        throw new ApiError(401,"Only task creator can delete.")
+    }
+
+    await Task.destroy({
+        where: {id: taskId}
+    })
+
+    res.status(200).json({
+        message: "success"
+    })
+} )
+
+// const updateTask = asyncHandler( async(req,res)=>{
+//     const {} = req.body;
+// } )
 
 
-export {create, getAllTasks, getTaskDetails}
+export {create, getAllTasks, getTaskDetails, deleteTask}
