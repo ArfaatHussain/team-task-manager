@@ -42,4 +42,53 @@ const create = asyncHandler( async(req,res)=>{
     })
 } )
 
-export {create}
+const getAllTasks = asyncHandler( async(req,res)=>{
+    
+    const tasks = await Task.findAll({
+        include: [
+            {
+            model: User,
+            as: 'assignedUser',
+            attributes: ['id','username','email']
+        },
+        {
+            model: Team,
+            as: 'assignedTeam',
+            attributes: ['id','name']
+        }
+    ],
+    })
+    res.status(200).json({
+        message:"success",
+        data:tasks
+    })
+} )
+
+const getTaskDetails = asyncHandler( async(req,res)=>{
+    
+    const {taskId} = req.params
+
+    const task = await Task.findOne({
+        where: {id: taskId},
+        include: [
+            {
+            model: User,
+            as: 'assignedUser',
+            attributes: ['id','username','email']
+        },
+        {
+            model: Team,
+            as: 'assignedTeam',
+            attributes: ['id','name']
+        }
+    ],
+    })
+    res.status(200).json({
+        message:"success",
+        data:task
+    })
+} )
+
+
+
+export {create, getAllTasks, getTaskDetails}
