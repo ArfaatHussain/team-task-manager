@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
-import { getMembers, deleteMember } from '../services/teamService';
+import { getMembers, deleteMember, addMember } from '../services/teamService';
 import { useParams } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import AddMemberModal from '../components/AddMemberModal';
+import { getAllUnassignedUsers } from '../services/userService';
 const TeamDetailsPage = () => {
     const [members, setMembers] = useState([]);
     const { teamId, name, description } = useParams();
@@ -12,12 +13,18 @@ const TeamDetailsPage = () => {
     const [showAddMemberModal, setShowAddMemberModal] = useState(false)
     const [showCreateTaskModal, setShowCreateTaskModal] = useState(false)
 
+    const [allUnassignedUsers, setAllUnassignedUsers] = useState([])
+
     useEffect(() => {
+
         getAllMembers()
+        getAllUnassigned()
+
     }, [])
 
     const getAllMembers = async () => {
         try {
+            setMessage('')
             setLoading(true)
             const response = await getMembers(teamId)
             console.log("Response: ", response)
@@ -33,19 +40,37 @@ const TeamDetailsPage = () => {
         }
     }
 
+    const getAllUnassigned = async () => {
+        try {
+            const response = await getAllUnassignedUsers()
+            console.log("All Un assigned users: ", response.data.data)
+            setAllUnassignedUsers(response.data.data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const handleRemoveMember = async (memberId) => {
         try {
             await deleteMember(teamId, memberId)
-            await getAllMembers()
+            const updatedMembers = members.filter((member) => member.id !== memberId);
+            setMembers(updatedMembers);
         } catch (error) {
             console.error("Error deleting member: ", error)
         }
     };
 
-    const handleAddMember = (userId) => {
+    const handleAddMember = async (userId) => {
         console.log('Selected User ID:', userId);
-        setShowAddMemberModal(false);
-        // You can now call an API or update your state
+        try {
+            await addMember(teamId, userId)
+            await getAllMembers()
+            const filterUsers = allUnassignedUsers.filter((user) => user.id != userId)
+            setAllUnassignedUsers(filterUsers)
+            setShowAddMemberModal(false);
+        } catch (error) {
+            console.error("Error Adding Member: ", error)
+        }
     };
 
     return (
@@ -56,9 +81,9 @@ const TeamDetailsPage = () => {
             </p>
 
             <div className="flex justify-end gap-3 mb-4">
-                <button 
-                onClick={()=>setShowAddMemberModal(true)}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                <button
+                    onClick={() => setShowAddMemberModal(true)}
+                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                     Add Member
                 </button>
 
@@ -66,7 +91,7 @@ const TeamDetailsPage = () => {
                     isOpen={showAddMemberModal}
                     onClose={() => setShowAddMemberModal(false)}
                     onAdd={handleAddMember}
-                    users={members}
+                    users={allUnassignedUsers}
                 />
                 <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                     Assign Task
@@ -98,14 +123,16 @@ const TeamDetailsPage = () => {
                 }
 
             </ul>
-            {loading ? (
+            {loading && (
                 <div className="flex justify-center items-center h-40">
                     <ClipLoader size={36} color="#3B82F6" />
                 </div>
-            ) : (
-                <p className="text-gray-600 text-base mb-6 text-center">{message}</p>
-
             )}
+
+            {!loading && members.length === 0 && (
+                <p className="text-gray-600 text-base mb-6 text-center">{message}</p>
+            )}
+
 
         </div>
     );

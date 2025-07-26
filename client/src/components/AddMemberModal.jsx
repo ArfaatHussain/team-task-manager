@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
+const AddMemberModal = ({ isOpen, onClose, onAdd, users }) => {
+    const [allUsers, setAllUsers] = useState([])
+    console.log("User received in Modal: ", users)
     const [selectedUserId, setSelectedUserId] = useState(null);
+    const initialUsers = users
+    const [search, setSearch] = useState('');
 
-    const users = [
-        { id: '1', name: 'Arfaat Hussain' },
-        { id: '2', name: 'Ali Ahmed' },
-        { id: '3', name: 'Sara Khan' },
-        { id: '4', name: 'Fatima Noor' },
-        { id: '5', name: 'Zain Raza' },
-        { id: '6', name: 'John Doe' },
-        { id: '7', name: 'Jane Smith' },
-        { id: '8', name: 'Ayesha Khan' },
-    ];
+    useEffect(() => {
+        setAllUsers(users || []);
+    }, [users]);
+
+    useEffect(() => {
+        if (!search) {
+            setAllUsers(users || []);
+            return;
+        }
+
+        const lowerSearch = search.toLowerCase();
+        const filtered = (users || []).filter((user) =>
+            user.username.toLowerCase().includes(lowerSearch) ||
+            String(user.id) === search
+        );
+
+        setAllUsers(filtered);
+    }, [search]);
+
 
     if (!isOpen) return null;
 
@@ -20,10 +33,18 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center"
         >
             <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-2xl">
-                <h2 className="text-xl font-bold mb-4">Add a Member</h2>
+                <h2 className="text-xl font-bold mb-4 text-center">Add a Member</h2>
 
+                <div className="w-full mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search by username"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
                 <div className="max-h-60 overflow-y-auto">
-                    {users.map((user) => {
+                    {allUsers.map((user) => {
                         const isSelected = selectedUserId === user.id;
                         return (
                             <div
@@ -34,7 +55,7 @@ const AddMemberModal = ({ isOpen, onClose, onAdd }) => {
                                     : 'bg-white hover:bg-gray-100'
                                     }`}
                             >
-                                <p className="font-medium">{user.name}</p>
+                                <p className="font-medium">{user.username}</p>
                                 <p className="text-sm text-gray-500">ID: {user.id}</p>
                             </div>
                         );

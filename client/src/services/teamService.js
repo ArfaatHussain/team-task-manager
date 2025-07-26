@@ -56,3 +56,25 @@ export const deleteMember = async (teamId, userId) => {
     throw error;
   }
 };
+
+export const addMember = async(teamId, userId)=>{
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        const response = await axios.post(`${API_URL}/team/addUser`,{
+            teamId,
+            userId
+        }, 
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        }
+    )
+
+    return response
+
+    } catch (error) {
+        throw error
+    }
+}
