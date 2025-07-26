@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import bcrypt from "bcrypt"
+import { Team } from "../models/team.model.js";
 
 const getUserProfile = asyncHandler(async (req, res) => {
     const { userId } = req.params
@@ -104,4 +105,30 @@ const getAllUnassignedUsers = asyncHandler(async (req, res) => {
     })
 })
 
-export { getUserProfile, updateUserProfile, getAllUnassignedUsers }
+const getTeams =asyncHandler(async(req,res)=>{
+
+    const {userId} = req.params;
+    if(!userId){
+        throw new ApiError(400,"User ID is missing")
+    }
+    const teams = await User.findAll({
+        where: {id: userId},
+        include: [
+            {
+                model: Team,
+                as: 'createdTeams'
+            }
+        ]
+    }) 
+
+    if(teams.length == 0){
+        throw new ApiError(404,"No teams created by this user")
+    }
+
+    res.status(200).json({
+        message: "success",
+        teams: teams[0].createdTeams
+    })
+})
+
+export { getUserProfile, updateUserProfile, getAllUnassignedUsers, getTeams }
