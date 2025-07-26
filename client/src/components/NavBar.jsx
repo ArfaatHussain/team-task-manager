@@ -14,7 +14,6 @@ const Navbar = () => {
       await logout()
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      alert("Logout success")
       navigate("/login")
 
     } catch (error) {

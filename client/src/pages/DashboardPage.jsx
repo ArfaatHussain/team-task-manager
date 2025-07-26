@@ -12,7 +12,7 @@ const DashboardPage = () => {
         </p>
         <Link
           to="/teams"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg hover:bg-blue-700 transition duration-300"
+          className="bg-blue-600 text-white px-6 py-2 rounded-md text-lg hover:bg-blue-700 transition duration-300"
         >
           View Your Teams
         </Link>
