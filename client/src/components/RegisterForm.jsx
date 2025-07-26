@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ClipLoader } from 'react-spinners'; // Import the spinner component
+import { ClipLoader } from 'react-spinners';
 import { register } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 function RegisterForm() {
@@ -12,17 +12,17 @@ function RegisterForm() {
 
   const navigate = useNavigate()
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    setLoading(true); // Start loading
+    e.preventDefault();
+    setLoading(true); 
     try {
       if (password != confirmPassword) {
         setLoading(false)
         setPasswordError("Password and Confirm Password must be same")
         return;
       }
-      const response = await register(username, email, password)
+      await register(username, email, password)
       setLoading(false); 
-      await navigate("/dashboard")
+      await navigate("/login")
       
     } catch (error) {
       setLoading(false);
