@@ -14,9 +14,19 @@ function LoginForm() {
     setLoading(true)
     try {
       const response = await login(email, password)
+      const data = response.data.data
+      console.log("Data: ",data)
+      const user = {
+        id: data.id,
+        username: data.username,
+        email: data.email
+      }
       setLoading(false)
       if(response.status == 200){
-        navigate("/dashboard")
+        localStorage.setItem("accessToken",data.accessToken)
+        localStorage.setItem("refreshToken",data.refreshToken)
+        localStorage.setItem("user",JSON.stringify(user))
+        navigate("/")
       }
     } catch (error) {
       if (error.status == 401) {

@@ -10,7 +10,7 @@ function TaskModal({ closeModal }) {
 
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+      <div className="bg-white p-6 rounded-lg shado-lg max-w-sm w-full">
         <h2 className="text-xl font-semibold mb-4">Create New Task</h2>
         <input
           type="text"

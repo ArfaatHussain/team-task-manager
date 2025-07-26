@@ -95,16 +95,16 @@ const loginUser = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken
     await user.save()
     const options = {
-        httponly: true,
-        secure: true
+        httponly: true
     }
     const responseData = {
         id: user.id,
-        username,
-        email,
+        username: user.username,
+        email: user.email,
         accessToken,
         refreshToken
     }
+    console.info("Response Data: ",responseData)
     res.status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
@@ -120,8 +120,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.update({ refreshToken: null }, { where: { id: user.id } })
 
     const options = {
-        httponly: true,
-        secure: true
+        httponly: true
     }
     res.status(200)
         .clearCookie("accessToken", options)

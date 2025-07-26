@@ -28,3 +28,19 @@ export const register = async (username, email, password) => {
         throw error
     }
 }
+
+export const logout = async () => {
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        console.log("AccessToken: ",accessToken)
+        const response = await axios.post(`${API_URL}/auth/logout`, {}, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }, 
+            withCredentials: true
+        })
+        return response
+    } catch (error) {
+        throw error
+    }
+}

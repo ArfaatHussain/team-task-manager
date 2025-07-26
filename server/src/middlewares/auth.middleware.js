@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 const verifyUser = asyncHandler(async (req, res, next) => {
-    const accessToken = req.cookies.accessToken || req.headers["authorization"]?.replace("bearer ", "")
+    const accessToken = req.cookies.accessToken || req.headers["authorization"]?.replace(/^Bearer\s+/i, "");
 
     if (!accessToken) {
         throw new ApiError(401, "Access token is missing")
