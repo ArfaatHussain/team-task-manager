@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; 
-
+import { Link } from 'react-router-dom';
+import { getTeams } from '../services/teamService';
 const TeamsPage = () => {
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    setTeams([
-      { id: 1, name: "Team Alpha", description: "A high-performing team." },
-      { id: 2, name: "Team Beta", description: "Focused on product development." },
-      { id: 3, name: "Team Gamma", description: "A creative marketing team." }
-    ]);
+    getAllTeams()
   }, []);
+
+  const getAllTeams = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"))
+      const response = await getTeams(user.id)
+      setTeams(response.data.teams)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <div className="p-6 bg-white min-h-screen">
@@ -19,9 +25,11 @@ const TeamsPage = () => {
         {teams.map((team) => (
           <div key={team.id} className="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-xl transition-all duration-300">
             <h3 className="text-xl font-semibold text-blue-600 mb-4">{team.name}</h3>
-            <p className="text-gray-600 mb-4">{team.description}</p>
+            <p className="text-gray-600 mb-4">{
+              team.description ? team.description : "No description were added"
+            }</p>
             <Link
-              to={`/team/${team.id}`} 
+              to={`/team/${team.id}/${encodeURIComponent(team.name)}/${team.description}`}
               className="text-blue-600 hover:text-blue-800"
             >
               View Team Details

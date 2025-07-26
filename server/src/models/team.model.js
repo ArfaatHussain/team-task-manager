@@ -5,8 +5,11 @@ import { DataTypes, where } from 'sequelize';
 const Team = sequelize.define('Team', {
   name: {
     type: DataTypes.STRING,
-    unique: true,
     allowNull: false,
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   createdBy: {
     type: DataTypes.INTEGER,
@@ -22,10 +25,10 @@ Team.beforeDestroy(async (team, options) => {
     { where: { teamId: team.id }, transaction: options.transaction }
   );
   await Task.update(
-    {teamId: null},
-    {where: {teamId: team.id}, transaction: options.transaction}
+    { teamId: null },
+    { where: { teamId: team.id }, transaction: options.transaction }
   )
 });
 
 
-export {Team}
+export { Team }

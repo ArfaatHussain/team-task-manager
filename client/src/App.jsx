@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import Navbar from './components/NavBar';
 import TeamsPage from './pages/TeamsPage';
+import TeamDetailsPage from './pages/TeamDetailsPage';
 
 const App = () => {
   return (
@@ -44,8 +45,8 @@ const AppRoutes = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/teams" element={<TeamsPage />} />
-          {/* <Route path="/team/:teamId" element={<TeamPage />} />
-          <Route path="/tasks" element={<Tasks />} /> */}
+          <Route path="/team/:teamId/:name/:description" element={<TeamDetailsPage />} />
+          {/* <Route path="/tasks" element={<Tasks />} /> */}
         </Routes>
       </div>
     </div>

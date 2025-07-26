@@ -4,27 +4,24 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const createTeam = asyncHandler(async (req, res) => {
-    const { name, creatorId } = req.body;
+    const { name, description, creatorId } = req.body;
 
     if (!name || !creatorId) {
-        throw new ApiError(400, "provide all fields")
+        throw new ApiError(400, "Please provide both 'name' and 'creatorId'");
     }
 
-    const isTeamExist = await Team.findOne({ where: { name: name } })
-
-    if (isTeamExist) {
-        throw new ApiError(409, "Team already exist with this name")
-    }
-
-    await Team.create({
+    const team = await Team.create({
         name,
-        createdBy: creatorId
-    })
+        createdBy: creatorId,
+        description: description || null
+    });
 
     res.status(201).json({
-        message: "success"
-    })
-})
+        message: "Team created successfully",
+        team
+    });
+});
+
 
 const getTeams = asyncHandler(async (req, res) => {
     const teams = await Team.findAll({
@@ -192,4 +189,32 @@ const removeUser = asyncHandler(async (req, res) => {
 
 })
 
-export { createTeam, getTeams, getTeamDetails, addUser, deleteTeam, updateTeam, removeUser }
+const getMembers = asyncHandler(async(req,res)=>{
+    const {teamId} = req.params;
+
+    const team = await Team.findOne({
+        where: {id: teamId},
+        include: [
+            {
+                model: User,
+                as: 'members',
+                attributes: ['id','username','email']
+            }
+        ]
+    })
+
+    if(!team){
+        throw new ApiError(404,"Team not found")
+    }
+
+    if(team.members.length == 0){
+        throw new ApiError(404,"No members in this team")
+    }
+
+    res.status(200).json({
+        message: "success",
+        members: team.members
+    })
+})
+
+export { createTeam, getTeams, getTeamDetails, addUser, deleteTeam, updateTeam, removeUser, getMembers }
