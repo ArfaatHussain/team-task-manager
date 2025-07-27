@@ -25,7 +25,7 @@ Team.beforeDestroy(async (team, options) => {
     { where: { teamId: team.id }, transaction: options.transaction }
   );
   await Task.update(
-    { teamId: null },
+    { teamId: null, assignedTo: null },
     { where: { teamId: team.id }, transaction: options.transaction }
   )
 });

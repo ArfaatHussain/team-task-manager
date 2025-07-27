@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
-import { getMembers, deleteMember, addMember } from '../services/teamService';
+import { getMembers, deleteMember, addMember, deleteTeam } from '../services/teamService';
 import { useParams } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import AddMemberModal from '../components/AddMemberModal';
@@ -82,6 +82,7 @@ const TeamDetailsPage = () => {
             await deleteMember(teamId, memberId)
             const updatedMembers = members.filter((member) => member.id !== memberId);
             setMembers(updatedMembers);
+            await getAllUnassigned()
         } catch (error) {
             console.error("Error deleting member: ", error)
         }
@@ -138,13 +139,16 @@ const TeamDetailsPage = () => {
         }
     };
 
-    const handleRemoveTask = async(taskId, userId)=>{
+    const handleTeamDelete = async()=>{
         try {
-            
+            await deleteTeam(teamId)
+            navigate(-1)
         } catch (error) {
-            
+            console.error("Error deleting team")
         }
     }
+
+
     return (
         <div className="max-w-4xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">Team: {name}</h1>
@@ -199,7 +203,9 @@ const TeamDetailsPage = () => {
                     creatorId={user.id}
                     handleCreateTask = {handleCreateTask}
                 />
-                <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                <button 
+                onClick={handleTeamDelete}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                     Delete Team
                 </button>
             </div>
