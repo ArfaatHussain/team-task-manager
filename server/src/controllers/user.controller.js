@@ -96,7 +96,7 @@ const getAllUnassignedUsers = asyncHandler(async (req, res) => {
 
     const unassignedUsers = users.filter((user) => user.teamId === null)
 
-    if(unassignedUsers.length == 0){
+    if (unassignedUsers.length == 0) {
         throw new ApiError(404, "No unassigned users found")
     }
 
@@ -106,31 +106,71 @@ const getAllUnassignedUsers = asyncHandler(async (req, res) => {
     })
 })
 
-const getTeams =asyncHandler(async(req,res)=>{
+const getTeams = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
 
-    const {userId} = req.params;
-    if(!userId){
-        throw new ApiError(400,"User ID is missing")
+    if (!userId) {
+        throw new ApiError(400, "User ID is missing");
     }
+
     const teams = await User.findAll({
-        where: {id: userId},
+        where: { id: userId },
         include: [
             {
                 model: Team,
-                as: 'createdTeams'
-            }
-        ]
-    }) 
+                as: 'createdTeams',
+            },
+        ],
+    });
 
-    if(teams.length == 0){
-        throw new ApiError(404,"No teams created by this user")
+    if (!teams || teams.length === 0 || teams[0].createdTeams.length === 0) {
+        throw new ApiError(404, "No teams created by this user");
     }
 
     res.status(200).json({
         message: "success",
-        teams: teams[0].createdTeams
+        teams: teams[0].createdTeams,
+    });
+});
+
+
+const getEnrolledTeam = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        throw new ApiError(400, "User ID is missing");
+    }
+
+    const team = await User.findOne({
+        where: { id: userId },
+        include: [
+            {
+                model: Team,
+                as: 'memberOf',
+            }
+        ],
+    });
+
+    const teamWithCreator = await Team.findOne({
+        where: {id: team.memberOf.id},
+        include: [{
+            model: User,
+            as: 'creator',
+            attributes: ['id','username','email']
+        }]
     })
-})
+
+    if (!team || team.memberOf == null) {
+        throw new ApiError(404, "Not enrolled in any team");
+    }
 
 
-export { getUserProfile, updateUserProfile, getAllUnassignedUsers, getTeams }
+    res.status(200).json({
+        message: "success",
+        team: teamWithCreator
+    });
+});
+
+
+
+export { getUserProfile, updateUserProfile, getAllUnassignedUsers, getTeams, getEnrolledTeam }

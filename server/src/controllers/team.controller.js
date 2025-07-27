@@ -86,6 +86,12 @@ const addUser = asyncHandler(async (req, res) => {
     if (user.teamId != null) {
         throw new ApiError(409, "User is already in another team")
     }
+    const team = await Team.findByPk(teamId)
+    if(!team){
+        throw new ApiError(404,"Team not found")
+    }
+    team.totalMembers += 1;
+    await team.save() 
     user.teamId = teamId
     await user.save()
 
@@ -178,6 +184,8 @@ const removeUser = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found in this team")
     }
 
+    team.totalMembers -= 1;
+    await team.save()
     const user = await User.findByPk(userId);
     user.teamId = null;
     await user.save();
@@ -216,5 +224,6 @@ const getMembers = asyncHandler(async(req,res)=>{
         members: team.members
     })
 })
+
 
 export { createTeam, getTeams, getTeamDetails, addUser, deleteTeam, updateTeam, removeUser, getMembers }

@@ -11,6 +11,11 @@ const Team = sequelize.define('Team', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  totalMembers: {
+    type: DataTypes.INTEGER,
+    allowNull:false,
+    defaultValue: 0
+  },
   createdBy: {
     type: DataTypes.INTEGER,
     allowNull: false,

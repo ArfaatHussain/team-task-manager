@@ -16,3 +16,21 @@ export const getAllUnassignedUsers = async()=>{
         throw error
     }
 }
+
+export const getEnrolledTeam = async()=>{
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        const user = JSON.parse(localStorage.getItem("user"))
+
+        const response = await axios.get(`${API_URL}/user/getEnrolledTeam/${user.id}`,{
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+
+        return response
+    } catch (error) {
+        throw error
+    }
+}
