@@ -81,3 +81,19 @@ export const deleteTaskFromMember = async(taskId, creatorId)=>{
         throw error
     }
 }
+
+export const getTasks = async(userId)=>{
+
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        const response = await axios.get(`${API_URL}/task/getTasks/${userId}`,{
+            headers: {
+                Authorization : `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+        return response
+    } catch (error) {
+        throw error
+    }
+}

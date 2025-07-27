@@ -5,7 +5,8 @@ import { create,
     deleteTask,
     updateTask,
     getAllUnassignedTasks,
-    assignTask
+    assignTask,
+    getTasks
 } from "../controllers/task.controller.js";
 import { verifyUser } from "../middlewares/auth.middleware.js";
 const taskRouter = Router()
@@ -19,5 +20,7 @@ taskRouter.route("/update").patch(verifyUser,updateTask)
 taskRouter.route("/getAllUnassignedTasks/:userId").get(verifyUser,getAllUnassignedTasks)
 
 taskRouter.route("/assignTask").patch(verifyUser,assignTask)
+
+taskRouter.route("/getTasks/:userId").get(verifyUser,getTasks)
 
 export {taskRouter}

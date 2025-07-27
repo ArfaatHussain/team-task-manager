@@ -1,49 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { FaTrash } from 'react-icons/fa'; // Assuming you're using react-icons for the trash icon
 import { useParams } from 'react-router-dom';
-import { getTasks } from '../services/userService';
+import { getTasks } from '../services/taskService';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { deleteTaskFromMember } from '../services/taskService';
 const ViewTasksOfMember = () => {
-    const {memberId} = useParams()
+    const { memberId } = useParams()
     const [tasks, setTasks] = useState([]);
     const [selectedTaskId, setSelectedTaskId] = useState(null);
     const [search, setSearch] = useState('');
-    const [loading,setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
 
-        (async()=>{
+        (async () => {
             try {
                 setLoading(true)
                 const response = await getTasks(memberId)
                 setTasks(response.data.tasks)
             } catch (error) {
-                if(error.status == 404){
+                if (error.status == 404) {
                     toast.error("No tasks assigned to this member")
                 }
                 console.error(error)
             }
-            finally{
+            finally {
                 setLoading(false)
             }
         })()
     }, []);
 
-    
-    const handleDelete = async (taskId) => {
-       const filteredTasks = tasks.filter((task)=> task.id != taskId)
-       setTasks(filteredTasks)
 
-       try {
-        const user = JSON.parse(localStorage.getItem("user"))
-        const response = await deleteTaskFromMember(taskId,user.id)
-        console.log("Response Data: ",response.data)
-        toast.success("Task deleted successfully")
-       } catch (error) {
-        console.error("Error deleting task: ",error)
-       }
+    const handleDelete = async (taskId) => {
+        const filteredTasks = tasks.filter((task) => task.id != taskId)
+        setTasks(filteredTasks)
+
+        try {
+            const user = JSON.parse(localStorage.getItem("user"))
+            const response = await deleteTaskFromMember(taskId, user.id)
+            console.log("Response Data: ", response.data)
+            toast.success("Task deleted successfully")
+        } catch (error) {
+            console.error("Error deleting task: ", error)
+        }
     };
 
     const filteredTasks = tasks.filter(
@@ -88,7 +88,7 @@ const ViewTasksOfMember = () => {
                                     {/* Delete Task Button */}
                                     <button
                                         onClick={(e) => {
-                                            e.stopPropagation(); 
+                                            e.stopPropagation();
                                             handleDelete(task.id);
                                         }}
                                         className="text-red-500 hover:text-red-700 cursor-pointer"
@@ -102,10 +102,13 @@ const ViewTasksOfMember = () => {
                     })}
                 </ul>
                 {
-                    loading?
-                    <ClipLoader size={36} color="#3B82F6" />
-                    : null
+                    loading ? (
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+                            <ClipLoader size={36} color="#3B82F6" />
+                        </div>
+                    ) : null
                 }
+
             </div>
         </div>
     );

@@ -210,4 +210,25 @@ const assignTask = asyncHandler(async (req, res) => {
 
 })
 
-export { create, getAllTasks, getTaskDetails, deleteTask, updateTask, getAllUnassignedTasks, assignTask }
+const getTasks = asyncHandler(async(req,res)=>{
+
+    const {userId} = req.params;
+
+    if(!userId){
+        throw new ApiError(400,"User ID is missing")
+    }
+    const tasks = await Task.findAll({
+        where: {assignedTo: userId}
+    })
+
+    if(tasks.length == 0){
+        throw new ApiError(404,"No tasks assigned to this user")
+    }
+
+    res.status(200).json({
+        message: "success",
+        tasks: tasks
+    })
+})
+
+export { create, getAllTasks, getTaskDetails, deleteTask, updateTask, getAllUnassignedTasks, assignTask, getTasks }
