@@ -1,0 +1,5 @@
+@media screen and (maxWidth: 350px) {
+    .customBtnWrapper {
+        flex-direction: column;
+    }
+}

@@ -6,11 +6,15 @@ import DashboardPage from './pages/DashboardPage';
 import Navbar from './components/NavBar';
 import TeamsPage from './pages/TeamsPage';
 import TeamDetailsPage from './pages/TeamDetailsPage';
-
+import toast, { Toaster } from 'react-hot-toast';
+import ViewTasksOfMember from './pages/ViewTasksOfMember';
 const App = () => {
   return (
     <Router>
       <AppRoutes />
+      <Toaster position="bottom-center"  toastOptions={{
+    duration: 2000, 
+  }}  />
     </Router>
   );
 }
@@ -25,12 +29,12 @@ const AppRoutes = () => {
     if (accessToken) {
       setIsAuthenticated(true);
       if (location.pathname === '/login' || location.pathname === '/register') {
-        navigate('/'); 
+        navigate('/');
       }
     } else {
       setIsAuthenticated(false);
       if (location.pathname !== '/login' && location.pathname !== '/register') {
-        navigate('/login'); 
+        navigate('/login');
       }
     }
   }, [location, navigate]);
@@ -38,7 +42,7 @@ const AppRoutes = () => {
   return (
     <div>
       {isAuthenticated && location.pathname !== '/login' && location.pathname !== '/register' && <Navbar />}
-      
+
       <div className="pt-16">
         <Routes>
           <Route path="/" element={<DashboardPage />} />
@@ -46,6 +50,7 @@ const AppRoutes = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/teams" element={<TeamsPage />} />
           <Route path="/team/:teamId/:name/:description" element={<TeamDetailsPage />} />
+          <Route path="/team/:memberId" element={<ViewTasksOfMember />} />
           {/* <Route path="/tasks" element={<Tasks />} /> */}
         </Routes>
       </div>

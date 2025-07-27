@@ -6,9 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const create = asyncHandler(async (req, res) => {
 
-    const { title, description, dueDate, teamId, assignedTo, creatorId } = req.body;
+    const { title, description, dueDate, teamId, creatorId } = req.body;
 
-    if (!title || !description || !dueDate || !teamId || !assignedTo || !creatorId) {
+    if (!title || !description || !dueDate || !teamId || !creatorId) {
         throw new ApiError(400, "Provide all fields")
     }
 
@@ -17,29 +17,17 @@ const create = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Team not found")
     }
 
-    const user = await User.findByPk(assignedTo)
-    if (!user) {
-        throw new ApiError(404, "User not found")
-    }
-
-    if (user.teamId == null) {
-        throw new ApiError(400, "User is not in the team")
-    }
-    if (user.teamId !== teamId) {
-        throw new ApiError(400, "User is in another team")
-    }
-
-    await Task.create({
+    const newTask = await Task.create({
         title,
         description,
         dueDate: new Date(dueDate),
         teamId,
-        assignedTo,
         creator: creatorId
     })
 
     res.status(201).json({
-        message: "success"
+        message: "success",
+        newTask: newTask
     })
 })
 
@@ -156,8 +144,8 @@ const updateTask = asyncHandler(async (req, res) => {
         fieldsToUpdate.teamId = teamId;
     }
 
-    if (assignedTo) {
-        fieldsToUpdate.assignedTo = assignedTo
+    if (typeof assignedTo !== 'undefined') {
+        fieldsToUpdate.assignedTo = assignedTo;
     }
 
     if (dueDate) {
@@ -184,5 +172,42 @@ const updateTask = asyncHandler(async (req, res) => {
 
 })
 
+const getAllUnassignedTasks = asyncHandler(async (req, res) => {
 
-export { create, getAllTasks, getTaskDetails, deleteTask, updateTask }
+    const { userId } = req.params;
+
+    const tasks = await Task.findAll({
+        where: { assignedTo: null, creator: userId }
+    })
+
+    if (tasks.length == 0) {
+        throw new ApiError(404, "No tasks found")
+    }
+
+    res.status(200).json({
+        message: "success",
+        tasks: tasks
+    })
+})
+
+const assignTask = asyncHandler(async (req, res) => {
+    const { assignedTo, taskId } = req.body;
+
+    console.log("Request Body: ", req.body);
+
+    if (!assignedTo || !taskId) {
+        throw new ApiError(400, "Provide all fields")
+    }
+
+    await Task.update(
+        { assignedTo: assignedTo },
+        { where: { id: taskId } }
+    );
+
+    res.status(200).json({
+        message: "Task assigned successfully",
+    })
+
+})
+
+export { create, getAllTasks, getTaskDetails, deleteTask, updateTask, getAllUnassignedTasks, assignTask }
