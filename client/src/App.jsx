@@ -8,13 +8,14 @@ import TeamsPage from './pages/TeamsPage';
 import TeamDetailsPage from './pages/TeamDetailsPage';
 import toast, { Toaster } from 'react-hot-toast';
 import ViewTasksOfMember from './pages/ViewTasksOfMember';
+import ViewEnrolledTeamDetails from './pages/ViewEnrolledTeamDetail';
 const App = () => {
   return (
     <Router>
       <AppRoutes />
-      <Toaster position="bottom-center"  toastOptions={{
-    duration: 2000, 
-  }}  />
+      <Toaster position="bottom-center" toastOptions={{
+        duration: 2000,
+      }} />
     </Router>
   );
 }
@@ -50,6 +51,7 @@ const AppRoutes = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/teams" element={<TeamsPage />} />
           <Route path="/team/:teamId/:name/:description" element={<TeamDetailsPage />} />
+          <Route path="/enrolledTeam/:teamId/:name/:description" element={<ViewEnrolledTeamDetails />} />
           <Route path="/team/:memberId" element={<ViewTasksOfMember />} />
           {/* <Route path="/tasks" element={<Tasks />} /> */}
         </Routes>

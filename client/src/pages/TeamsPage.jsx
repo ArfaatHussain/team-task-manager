@@ -56,7 +56,7 @@ const TeamsPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {teams.map((team) => (
           <div
-          onClick={()=>navigate(`/team/${team.id}/${encodeURIComponent(team.name)}/${team.description}`)}
+            onClick={() => navigate(`/team/${team.id}/${encodeURIComponent(team.name)}/${team.description}`)}
             key={team.id}
             className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 cursor-pointer"
           >
@@ -90,9 +90,12 @@ const TeamsPage = () => {
           Your Enrolled Team
         </h2>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {Object.keys(enrolledTeam).length !== 0 ? (
-          <div className="col-span-full w-full hover:bg-blue-50 hover:shadow-2xl transform transition-all duration-300 ease-in-out cursor-pointer">
+          <div
+            onClick={() => navigate(`/enrolledTeam/${enrolledTeam.id}/${encodeURIComponent(enrolledTeam.name)}/${enrolledTeam.description}`)}
+            className="col-span-full w-full hover:bg-blue-50 hover:shadow-2xl transform transition-all duration-300 ease-in-out cursor-pointer">
             <div className="flex justify-between items-center p-4 bg-white shadow-lg rounded-lg">
               <h3 className="text-xl font-semibold text-blue-600 mb-2">{enrolledTeam.name}</h3>
               <p className="text-gray-600">Total Members: {enrolledTeam.totalMembers}</p>
