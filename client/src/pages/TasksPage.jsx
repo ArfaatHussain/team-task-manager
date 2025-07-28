@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { useNavigate } from 'react-router-dom';
 import { getAllAssignedTasks, getCreatedTasks } from '../services/taskService';
 import toast from 'react-hot-toast';
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
+
 
 const TasksPage = () => {
   const [createdTasks, setCreatedTasks] = useState([]);
@@ -13,6 +15,7 @@ const TasksPage = () => {
   const [loading, setLoading] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [search, setSearch] = useState('')
+  const [showCompleteLoading, setShowCompleteLoading] = useState(false)
 
   useEffect(() => {
 
@@ -69,21 +72,22 @@ const TasksPage = () => {
   }
 
   const formatDate = (date) => {
-    const formattedDate = date.toLocaleString('en-US', {
-      weekday: 'long',  // Full weekday name, e.g., "Monday"
-      year: 'numeric',  // Full year, e.g., "2025"
-      month: 'long',    // Full month name, e.g., "July"
-      day: 'numeric',   // Numeric day of the month, e.g., "28"
-      hour: 'numeric',  // Hour in 12-hour format, e.g., "2"
-      minute: 'numeric',// Minute, e.g., "45"
-      second: 'numeric',// Second, e.g., "30"
-      hour12: true      // Use 12-hour clock (AM/PM format)
+    // Convert ISO string to Date object if it is a string
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+    const formattedDate = dateObj.toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour12: true
     });
-    return formattedDate
-  }
+
+    return formattedDate;
+  };
+
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6">
       <div className="flex items-center space-x-4 mb-6">
         <h1 className="text-3xl font-bold">Your Created Tasks</h1>
         <input
@@ -96,35 +100,42 @@ const TasksPage = () => {
       </div>
 
       <div className="bg-white shadow-md rounded overflow-hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border-b">
-          <div className="font-semibold">Task</div>
-          <div className="font-semibold">Team</div>
-          <div className="font-semibold">Total Members</div>
-          <div className="font-semibold">Assigned To</div>
-          <div className="font-semibold">Status</div> {/* New column for Status */}
-        </div>
-
-        <ul className="divide-y">
-          {createdTasks.map((task) => {
-            const isSelected = selectedTaskId === task.id;
-            return (
-              <div
-                key={task.id}
-                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 hover:bg-gray-100 ${isSelected
-                  ? 'border-2 border-blue-600 text-blue-600 bg-blue-50 rounded-md'
-                  : 'bg-white hover:bg-gray-100 rounded-md'
-                  }`}
-                onClick={() => setSelectedTaskId((prevId) => prevId === task.id ? null : task.id)}
-              >
-                <div className="text-md font-medium">{task.title}</div>
-                <div className="text-sm text-gray-600">{task.assignedTeam ? task.assignedTeam.name : 'No team assigned'}</div>
-                <div className="text-sm text-gray-600">{task.assignedTeam ? task.assignedTeam.totalMembers : 'N/A'}</div>
-                <div className="text-sm text-gray-600">{task.assignedUser ? task.assignedUser.username : 'No user assigned'}</div>
-                <div className="text-sm text-gray-600">{task.status}</div> {/* Display task status */}
-              </div>
-            );
-          })}
-        </ul>
+        <Table className="min-w-full">
+          <Thead>
+            <Tr>
+              <Th className="font-semibold px-4 py-2">Task</Th>
+              <Th className="font-semibold px-4 py-2">Team</Th>
+              <Th className="font-semibold px-4 py-2">Total Members</Th>
+              <Th className="font-semibold px-4 py-2">Assigned To</Th>
+              <Th className="font-semibold px-4 py-2">Status</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {createdTasks.map((task) => {
+              const isSelected = selectedTaskId === task.id;
+              return (
+                <Tr
+                  key={task.id}
+                  className={`hover:bg-gray-100 ${isSelected
+                    ? "border-2 border-blue-600 text-blue-600 bg-blue-50 rounded-md"
+                    : "bg-white hover:bg-gray-100"
+                    }`}
+                  onClick={() =>
+                    setSelectedTaskId((prevId) =>
+                      prevId === task.id ? null : task.id
+                    )
+                  }
+                >
+                  <Td className="text-md font-medium px-4 py-3 text-center">{task.title}</Td>
+                  <Td className="text-sm text-gray-600 px-4 py-3 text-center">{task.assignedTeam ? task.assignedTeam.name : 'No team assigned'}</Td>
+                  <Td className="text-sm text-gray-600 px-4 py-3 text-center">{task.assignedTeam ? task.assignedTeam.totalMembers : 'N/A'}</Td>
+                  <Td className="text-sm text-gray-600 px-4 py-3 text-center">{task.assignedUser ? task.assignedUser.username : 'No user assigned'}</Td>
+                  <Td className="text-sm text-gray-600 px-4 py-3 text-center">{task.status}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
       </div>
 
       {loading && (
@@ -147,43 +158,54 @@ const TasksPage = () => {
         />
       </div>
 
-      <div className="bg-white shadow-md rounded overflow-hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border-b">
-          <div className="font-semibold">Task</div>
-          <div className="font-semibold">Description</div>
-          <div className="font-semibold">Deadline</div>
-          <div className="font-semibold">Status</div>
-        </div>
-
-        <ul className="divide-y">
-          {assignedTasks.map((task) => {
-            const isSelected = selectedTaskId === task.id;
-            return (
-              <div
-                key={task.id}
-                className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 hover:bg-gray-100 ${isSelected
-                  ? 'border-2 border-blue-600 text-blue-600 bg-blue-50 rounded-md'
-                  : 'bg-white hover:bg-gray-100 rounded-md'
-                  }`}
-                onClick={() => setSelectedTaskId((prevId) => prevId === task.id ? null : task.id)}
-              >
-                <div className="text-md font-medium">{task.title}</div>
-                <div className="text-sm text-gray-600">{task.description ? task.description : 'No description were added'}</div>
-                <div className="text-sm text-gray-600">
-                  {formatDate(task.dueDate)}
-                </div>
-                <div
-                  className="text-sm text-gray-600"
+      <div className="bg-white shadow-lg rounded overflow-hidden">
+        <Table className="min-w-full">
+          <Thead>
+            <Tr>
+              <Th className="font-semibold">Task</Th>
+              <Th className="font-semibold">Description</Th>
+              <Th className="font-semibold">Deadline</Th>
+              <Th className="font-semibold">Status</Th>
+              <Th className="font-semibold">Action</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {assignedTasks.map((task) => {
+              const isSelected = selectedTaskId === task.id;
+              return (
+                <Tr
+                  key={task.id}
+                  className={`hover:bg-gray-100 ${isSelected ? 'border-2 border-blue-600 text-blue-600 bg-blue-50 rounded-md' : 'bg-white hover:bg-gray-100'}`}
+                  onClick={() => setSelectedTaskId((prevId) => prevId === task.id ? null : task.id)}
                 >
-                  {
-                    task.status
-                  }
-                </div>
-              </div>
-            );
-          })}
-        </ul>
+                  <Td className="text-md font-medium px-3 py-3 text-center">{task.title}</Td>
+                  <Td className="text-sm text-gray-600 py-3 text-center">{task.description ? task.description : 'No description was added'}</Td>
+                  <Td className="text-sm text-gray-600 py-3 text-center">{formatDate(task.dueDate)}</Td>
+                  <Td className="text-sm text-gray-600 py-3 text-center">{task.status}</Td>
+                  <Td className="text-center py-3 ">
+                    <button
+                      className="mt-2 p-2 text-blue-600 hover:text-blue-700 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowCompleteLoading(!showCompleteLoading);
+                      }}
+                    >
+                      {showCompleteLoading ? (
+                        <ClipLoader size={30} color={'blue-600'} />
+                      ) : (
+                        <i className="fas fa-check-circle"></i>
+                      )}
+                    </button>
+
+
+                  </Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
       </div>
+
     </div>
 
 
