@@ -4,7 +4,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import bcrypt from "bcrypt"
 import { Team } from "../models/team.model.js";
 import { Task } from "../models/task.model.js";
-import { Op } from "sequelize";
 
 const getUserProfile = asyncHandler(async (req, res) => {
     const { userId } = req.params
@@ -89,51 +88,24 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 })
 
 const getAllUnassignedUsers = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
 
-    // Step 1: Fetch all teams created by user
-    const teams = await Team.findAll({
-        where: { createdBy: userId },
-        attributes: ['id'],
-    });
+    const users = await User.findAll()
 
-    if (teams.length === 0) {
-        return res.status(200).json({
-            message: 'success',
-            data: [],
-        });
+    if (users.length == 0) {
+        throw new ApiError(404, "No users yet")
     }
 
-    // Step 2: Fetch all assigned users in a single query
-    const createdTeamsIds = teams.map((team) => team.id);
+    const unassignedUsers = users.filter((user) => user.teamId === null)
 
-    const assignedUsers = await User.findAll({
-        where: {
-            teamId: {
-                [Op.in]: createdTeamsIds, 
-            },
-        },
-        attributes: ['id'],
-    });
-
-    const assignedUsersIds = assignedUsers.map((user) => user.id);
-
-    // Step 3: Fetch users who are not assigned to any of these teams
-    const unassignedUsers = await User.findAll({
-        where: {
-            id: {
-                [Op.notIn]: assignedUsersIds, 
-            },
-        },
-        attributes: ['id', 'username', 'email'], 
-    });
+    if (unassignedUsers.length == 0) {
+        throw new ApiError(404, "No unassigned users found")
+    }
 
     res.status(200).json({
-        message: 'success',
-        data: unassignedUsers,
-    });
-});
-
+        message: "success",
+        data: unassignedUsers
+    })
+})
 
 const getTeams = asyncHandler(async (req, res) => {
     const { userId } = req.params;
@@ -181,11 +153,11 @@ const getEnrolledTeam = asyncHandler(async (req, res) => {
     });
 
     const teamWithCreator = await Team.findOne({
-        where: { id: team.memberOf.id },
+        where: {id: team.memberOf.id},
         include: [{
             model: User,
             as: 'creator',
-            attributes: ['id', 'username', 'email']
+            attributes: ['id','username','email']
         }]
     })
 

@@ -4,8 +4,7 @@ import { API_URL } from "../Constants"
 export const getAllUnassignedUsers = async()=>{
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const user = JSON.parse(localStorage.getItem("user"))
-        const response = await axios.get(`${API_URL}/user/getAllUnassignedUsers/${user.id}`,{
+        const response = await axios.get(`${API_URL}/user/getAllUnassignedUsers`,{
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },

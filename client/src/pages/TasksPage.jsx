@@ -14,28 +14,13 @@ const TasksPage = () => {
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [search, setSearch] = useState('')
 
-
-
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const createdTasksResponse = await getCreatedTasks();
-        setCreatedTasks(createdTasksResponse.data.tasks);
-        setOriginalCreatedTasks(createdTasksResponse.data.tasks)
-        const user = JSON.parse(localStorage.getItem("user"))
-        const assignedTasksResponse = await getAllAssignedTasks(user.id)
-        setAssignedTasks(assignedTasksResponse.data.tasks)
-        setOriginalAssignedTasks(assignedTasksResponse.data.tasks)
 
-      } catch (error) {
-        if (error.status === 404) {
-          toast.error(error.response.data.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
+    setLoading(true)
+    getCreatedTasksLocal();
+    assignedTasksLocal();
+    setLoading(false)
+
   }, []);
 
   useEffect(() => {
@@ -59,6 +44,29 @@ const TasksPage = () => {
 
     setCreatedTasks(filteredTasks)
   }, [search])
+
+  const getCreatedTasksLocal = async () => {
+    try {
+      const createdTasksResponse = await getCreatedTasks();
+      setCreatedTasks(createdTasksResponse.data.tasks);
+      setOriginalCreatedTasks(createdTasksResponse.data.tasks)
+    } catch (error) {
+      if (error.status == 404) {
+        toast.error("No tasks created.")
+      }
+    }
+  }
+
+  const assignedTasksLocal = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"))
+      const assignedTasksResponse = await getAllAssignedTasks(user.id)
+      setAssignedTasks(assignedTasksResponse.data.tasks)
+      setOriginalAssignedTasks(assignedTasksResponse.data.tasks)
+    } catch (error) {
+      toast.error(error.response.data.message)
+    }
+  }
 
   const formatDate = (date) => {
     const formattedDate = date.toLocaleString('en-US', {
@@ -165,7 +173,7 @@ const TasksPage = () => {
                   {formatDate(task.dueDate)}
                 </div>
                 <div
-                className="text-sm text-gray-600"
+                  className="text-sm text-gray-600"
                 >
                   {
                     task.status
