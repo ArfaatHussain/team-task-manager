@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { getAllAssignedTasks, getCreatedTasks } from '../services/taskService';
+import { completeTask, getAllAssignedTasks, getCreatedTasks } from '../services/taskService';
 import toast from 'react-hot-toast';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
@@ -16,6 +16,7 @@ const TasksPage = () => {
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [search, setSearch] = useState('')
   const [showCompleteLoading, setShowCompleteLoading] = useState(false)
+  const [assignedTaskSearch, setassignedTaskSearch] = useState('')
 
   useEffect(() => {
 
@@ -57,6 +58,21 @@ const TasksPage = () => {
       if (error.status == 404) {
         toast.error("No tasks created.")
       }
+    }
+  }
+
+  const handleCompleteTask = async (taskId) => {
+    try {
+      setShowCompleteLoading(true)
+      const response = await completeTask(taskId)
+      console.log("Response: ",response.data)
+      const filteredAssignedTasks = assignedTasks.filter((task)=>task.id !== taskId)
+      setAssignedTasks(filteredAssignedTasks)
+      setOriginalAssignedTasks(filteredAssignedTasks)
+    } catch (error) {
+      toast.success("Task Completed.")
+    }finally{
+      setShowCompleteLoading(false)
     }
   }
 
@@ -187,7 +203,7 @@ const TasksPage = () => {
                       className="mt-2 p-2 text-blue-600 hover:text-blue-700 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setShowCompleteLoading(!showCompleteLoading);
+                        handleCompleteTask(task.id)
                       }}
                     >
                       {showCompleteLoading ? (
@@ -196,8 +212,6 @@ const TasksPage = () => {
                         <i className="fas fa-check-circle"></i>
                       )}
                     </button>
-
-
                   </Td>
                 </Tr>
               );

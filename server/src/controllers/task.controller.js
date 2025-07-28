@@ -109,10 +109,10 @@ const deleteTask = asyncHandler(async (req, res) => {
 })
 
 const updateTask = asyncHandler(async (req, res) => {
-    const { creatorId, taskId, assignedTo, teamId, dueDate, status, description, title } = req.body;
+    const { taskId, assignedTo, teamId, dueDate, status, description, title } = req.body;
 
-    if (!creatorId || !taskId) {
-        throw new ApiError(400, "Provide all fields")
+    if (!taskId) {
+        throw new ApiError(400, "Task ID is missing")
     }
 
     const hasUpdateFields =
@@ -132,10 +132,6 @@ const updateTask = asyncHandler(async (req, res) => {
 
     if (!task) {
         throw new ApiError(404, "Task not found")
-    }
-
-    if (task.creator != creatorId) {
-        throw new ApiError(401, "Only task creator can modify.")
     }
 
     let fieldsToUpdate = {}
@@ -164,7 +160,7 @@ const updateTask = asyncHandler(async (req, res) => {
         fieldsToUpdate.title = title
     }
 
-    await Task.update(fieldsToUpdate, { where: { id: taskId } })
+   await Task.update(fieldsToUpdate, { where: { id: taskId } })
 
     res.status(200).json({
         message: "success"
@@ -220,7 +216,7 @@ const getAllAssignedTasks = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User ID is missing")
     }
     const tasks = await Task.findAll({
-        where: { assignedTo: userId }
+        where: { assignedTo: userId, status: "Pending" }
     })
 
     if (tasks.length == 0) {

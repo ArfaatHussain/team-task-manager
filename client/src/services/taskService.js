@@ -115,3 +115,23 @@ export const getCreatedTasks = async () => {
         throw error
     }
 }
+
+export const completeTask = async(taskId)=>{
+
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        const requestBody = {
+            taskId,
+            status: "completed"
+        }
+        const response = await axios.patch(`${API_URL}/task/update`,requestBody,{
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+        return response
+    } catch (error) {
+        throw error
+    }
+}
