@@ -9,7 +9,7 @@ userRouter.route("/getTeams/:userId").get(verifyUser,getTeams)
 
 userRouter.route("/updateUserProfile").patch(verifyUser,updateUserProfile)
 
-userRouter.route("/getAllUnassignedUsers").get(verifyUser,getAllUnassignedUsers)
+userRouter.route("/getAllUnassignedUsers/:userId").get(verifyUser,getAllUnassignedUsers)
 
 userRouter.route("/getEnrolledTeam/:userId").get(verifyUser,getEnrolledTeam)
 

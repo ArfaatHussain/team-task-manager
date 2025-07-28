@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 
 import toast, { Toaster } from 'react-hot-toast';
 import { createTask } from '../services/taskService';
-const CreateTaskModal = ({ isOpen, onClose, creatorId, teamId, handleCreateTask }) => {
-  const [taskTitle, setTaskTitle] = useState('');
-  const [taskDescription, setTaskDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const creator = creatorId
+const CreateTeamModal = ({ isOpen, onClose, handleCreateTeam }) => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
   if (!isOpen) return null;
 
@@ -15,44 +13,29 @@ const CreateTaskModal = ({ isOpen, onClose, creatorId, teamId, handleCreateTask 
       <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-2xl">
         <h2 className="text-xl font-bold mb-4 text-center">Create New Task</h2>
 
-        {/* Task Title */}
         <label className="block mb-2 text-sm font-medium text-gray-700">
-          Task Title:
+          Team Name:
         </label>
         <input
           type="text"
-          value={taskTitle}
-          onChange={(e) => setTaskTitle(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring focus:ring-blue-300"
-          placeholder="Enter task title..."
-          // required
+          placeholder="Enter team name..."
+          required
         />
 
-        {/* Task Description */}
         <label className="block mb-2 text-sm font-medium text-gray-700">
-          Task Description:
+          Team Description:
         </label>
         <textarea
-          value={taskDescription}
-          onChange={(e) => setTaskDescription(e.target.value)}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring focus:ring-blue-300"
-          placeholder="Enter task description..."
-          // required
+          placeholder="Enter team description..."
+          required
         />
 
-        {/* Due Date */}
-        <label className="block mb-2 text-sm font-medium text-gray-700">
-          Due Date:
-        </label>
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring focus:ring-blue-300"
-          
-        />
-
-        {/* Buttons */}
         <div className="mt-6 flex justify-end gap-2">
           <button
             onClick={onClose}
@@ -62,10 +45,10 @@ const CreateTaskModal = ({ isOpen, onClose, creatorId, teamId, handleCreateTask 
           </button>
 
           <button
-            onClick={()=>handleCreateTask(taskTitle,taskDescription, dueDate, creator)}
+            onClick={()=>handleCreateTeam(name,description)}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            Create Task
+            Create Team
           </button>
         </div>
       </div>
@@ -73,4 +56,4 @@ const CreateTaskModal = ({ isOpen, onClose, creatorId, teamId, handleCreateTask 
   );
 };
 
-export default CreateTaskModal;
+export default CreateTeamModal;

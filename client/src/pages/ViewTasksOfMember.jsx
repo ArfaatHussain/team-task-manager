@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaTrash } from 'react-icons/fa'; // Assuming you're using react-icons for the trash icon
 import { useParams } from 'react-router-dom';
-import { getTasks } from '../services/taskService';
+import { getAllAssignedTasks } from '../services/taskService';
 import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { deleteTaskFromMember } from '../services/taskService';
@@ -17,7 +17,7 @@ const ViewTasksOfMember = () => {
         (async () => {
             try {
                 setLoading(true)
-                const response = await getTasks(memberId)
+                const response = await getAllAssignedTasks(memberId)
                 setTasks(response.data.tasks)
             } catch (error) {
                 if (error.status == 404) {

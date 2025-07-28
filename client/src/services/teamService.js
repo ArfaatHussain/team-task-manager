@@ -101,3 +101,26 @@ export const deleteTeam = async (teamId) => {
     }
 };
 
+export const createTeam = async(name, description)=>{
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        const user = JSON.parse(localStorage.getItem("user"))
+
+        const requestBody = {
+            name,
+            description,
+            creatorId: user.id
+        }
+
+        const response = await axios.post(`${API_URL}/team/create`, requestBody,{
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+        return response
+    } catch (error) {
+        throw error
+    }
+}
+

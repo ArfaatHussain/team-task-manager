@@ -104,7 +104,7 @@ const TeamDetailsPage = () => {
     const handleAssignTask = async (taskId) => {
         console.log('Selected Task ID:', taskId);
         try {
-            await assignTask(selectedUserId, taskId)
+            await assignTask(selectedUserId, taskId, teamId)
             setShowAssignTaskModal(false)
             setSelectedUserId(null)
             const filterTasks = allUnassignedTasks.filter((task) => task.id != taskId)
@@ -115,7 +115,7 @@ const TeamDetailsPage = () => {
         }
     }
 
-    const handleCreateTask = async (taskTitle,taskDescription,dueDate, creator ) => {
+    const handleCreateTask = async (taskTitle, taskDescription, dueDate, creator) => {
 
         if (!taskTitle || !taskDescription || !dueDate) {
             toast.error("Please fill all fields")
@@ -125,13 +125,13 @@ const TeamDetailsPage = () => {
         try {
             const response = await createTask(creator, teamId, taskTitle, taskDescription, dueDate)
             setShowCreateTaskModal(false)
-            console.log("Response after task creation: ",response.data)
+            console.log("Response after task creation: ", response.data)
             const newTask = {
                 id: response.data.newTask.id,
                 title: response.data.newTask.title
             }
 
-            setAllUnassignedTasks(prevTasks=>[...prevTasks,newTask])
+            setAllUnassignedTasks(prevTasks => [...prevTasks, newTask])
 
         } catch (error) {
             console.error("Error: ", error)
@@ -139,7 +139,7 @@ const TeamDetailsPage = () => {
         }
     };
 
-    const handleTeamDelete = async()=>{
+    const handleTeamDelete = async () => {
         try {
             await deleteTeam(teamId)
             navigate(-1)
@@ -201,11 +201,11 @@ const TeamDetailsPage = () => {
                     onClose={() => { setShowCreateTaskModal(false) }}
                     teamId={teamId}
                     creatorId={user.id}
-                    handleCreateTask = {handleCreateTask}
+                    handleCreateTask={handleCreateTask}
                 />
-                <button 
-                onClick={handleTeamDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                <button
+                    onClick={handleTeamDelete}
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                     Delete Team
                 </button>
             </div>
@@ -216,40 +216,41 @@ const TeamDetailsPage = () => {
                     return (
                         <div
                             key={member.id}
-                            className={`flex justify-between items-center p-4 hover:bg-gray-100 ${isSelected
-                                ? 'border-2 border-blue-600 text-blue-600 bg-blue-50 rounded-md'
-                                : 'bg-white hover:bg-gray-100 rounded-md'
+                            className={`flex flex-col sm:flex-row justify-between items-center sm:space-x-4 p-4 hover:bg-gray-100 ${isSelected
+                                    ? 'border-2 border-blue-600 text-blue-600 bg-blue-50 rounded-md'
+                                    : 'bg-white hover:bg-gray-100 rounded-md'
                                 }`}
                             onClick={() => setSelectedUserId((prevId) => prevId === member.id ? null : member.id)}
                         >
-                            <div>
+                            <div className="flex-1">
                                 <p className="font-semibold">{member.username}</p>
                                 <p className="text-sm text-gray-600">{member.email}</p>
                             </div>
 
-                            <button
-                                className="px-6 py-2 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out ml-auto mr-5"
-                                title="Show Assigned Tasks"
-                                onClick={()=>navigate(`/team/${member.id}`)}
-                            >
-                                View Tasks
-                            </button>
+                            <div className="flex flex-row space-x-4 mt-2 sm:mt-0">
+                                <button
+                                    className="px-6 py-2 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
+                                    title="Show Assigned Tasks"
+                                    onClick={() => navigate(`/team/${member.id}`)}
+                                >
+                                    View Tasks
+                                </button>
 
-                            {/* Remove member button */}
-                            <button
-                                onClick={() => handleRemoveMember(member.id)}
-                                className="text-red-500 hover:text-red-700 cursor-pointer"
-                                title="Remove member"
-                            >
-                                <FaTrash size={18} />
-                            </button>
+                                {/* Remove member button */}
+                                <button
+                                    onClick={() => handleRemoveMember(member.id)}
+                                    className="text-red-500 hover:text-red-700 cursor-pointer"
+                                    title="Remove member"
+                                >
+                                    <FaTrash size={18} />
+                                </button>
+                            </div>
                         </div>
                     );
                 })}
+            </ul>
 
 
-
-            </ul >
             {loading && (
                 <div className="flex justify-center items-center h-40">
                     <ClipLoader size={36} color="#3B82F6" />

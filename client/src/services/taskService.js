@@ -1,11 +1,11 @@
 import axios from "axios"
 import { API_URL } from "../Constants"
 
-export const getAllUnassignedTasks = async()=>{
+export const getAllUnassignedTasks = async () => {
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const user = JSON.parse( localStorage.getItem("user") )
-        const response = await axios.get(`${API_URL}/task/getAllUnassignedTasks/${user.id}`,{
+        const user = JSON.parse(localStorage.getItem("user"))
+        const response = await axios.get(`${API_URL}/task/getAllUnassignedTasks/${user.id}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -17,7 +17,7 @@ export const getAllUnassignedTasks = async()=>{
     }
 }
 
-export const createTask = async(creator, teamId, title, description, dueDate)=>{
+export const createTask = async (creator, teamId, title, description, dueDate) => {
 
     try {
         const accessToken = localStorage.getItem("accessToken")
@@ -28,8 +28,8 @@ export const createTask = async(creator, teamId, title, description, dueDate)=>{
             description,
             dueDate: new Date(dueDate).toISOString()
         }
-        const response = await axios.post(`${API_URL}/task/create`,requestBody,{
-            headers:{
+        const response = await axios.post(`${API_URL}/task/create`, requestBody, {
+            headers: {
                 Authorization: `Bearer ${accessToken}`
             },
             withCredentials: true
@@ -41,15 +41,16 @@ export const createTask = async(creator, teamId, title, description, dueDate)=>{
     }
 }
 
-export const assignTask = async(assignedTo, taskId)=>{
+export const assignTask = async (assignedTo, taskId, teamId) => {
 
     try {
         const requestBody = {
             assignedTo,
-            taskId
+            taskId,
+            teamId
         }
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.patch(`${API_URL}/task/assignTask`,requestBody,{
+        const response = await axios.patch(`${API_URL}/task/assignTask`, requestBody, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -61,7 +62,7 @@ export const assignTask = async(assignedTo, taskId)=>{
     }
 }
 
-export const deleteTaskFromMember = async(taskId, creatorId)=>{
+export const deleteTaskFromMember = async (taskId, creatorId) => {
     try {
         const requestBody = {
             creatorId,
@@ -69,7 +70,7 @@ export const deleteTaskFromMember = async(taskId, creatorId)=>{
             assignedTo: null
         }
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.patch(`${API_URL}/task/update`,requestBody,{
+        const response = await axios.patch(`${API_URL}/task/update`, requestBody, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -82,16 +83,33 @@ export const deleteTaskFromMember = async(taskId, creatorId)=>{
     }
 }
 
-export const getTasks = async(userId)=>{
+export const getAllAssignedTasks = async (userId) => {
 
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.get(`${API_URL}/task/getTasks/${userId}`,{
+        const response = await axios.get(`${API_URL}/task/getAllAssignedTasks/${userId}`, {
             headers: {
-                Authorization : `Bearer ${accessToken}`
+                Authorization: `Bearer ${accessToken}`
             },
             withCredentials: true
         })
+        return response
+    } catch (error) {
+        throw error
+    }
+}
+
+export const getCreatedTasks = async () => {
+    try {
+        const accessToken = localStorage.getItem("accessToken")
+        const user = JSON.parse(localStorage.getItem("user"))
+        const response = await axios.get(`${API_URL}/task/getAllCreatedTasks/${user.id}`,{
+            headers:{
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+
         return response
     } catch (error) {
         throw error

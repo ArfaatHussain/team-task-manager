@@ -9,6 +9,7 @@ import TeamDetailsPage from './pages/TeamDetailsPage';
 import toast, { Toaster } from 'react-hot-toast';
 import ViewTasksOfMember from './pages/ViewTasksOfMember';
 import ViewEnrolledTeamDetails from './pages/ViewEnrolledTeamDetail';
+import TasksPage from './pages/TasksPage';
 const App = () => {
   return (
     <Router>
@@ -53,7 +54,7 @@ const AppRoutes = () => {
           <Route path="/team/:teamId/:name/:description" element={<TeamDetailsPage />} />
           <Route path="/enrolledTeam/:teamId/:name/:description" element={<ViewEnrolledTeamDetails />} />
           <Route path="/team/:memberId" element={<ViewTasksOfMember />} />
-          {/* <Route path="/tasks" element={<Tasks />} /> */}
+          <Route path="/tasks" element={<TasksPage />} />
         </Routes>
       </div>
     </div>

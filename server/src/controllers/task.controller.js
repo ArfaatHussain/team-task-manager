@@ -191,7 +191,7 @@ const getAllUnassignedTasks = asyncHandler(async (req, res) => {
 })
 
 const assignTask = asyncHandler(async (req, res) => {
-    const { assignedTo, taskId } = req.body;
+    const { assignedTo, taskId, teamId } = req.body;
 
     console.log("Request Body: ", req.body);
 
@@ -199,10 +199,12 @@ const assignTask = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Provide all fields")
     }
 
-    await Task.update(
-        { assignedTo: assignedTo },
-        { where: { id: taskId } }
-    );
+    const task = await Task.findByPk(taskId)
+    if(teamId){
+        task.teamId = teamId
+    }
+    task.assignedTo = assignedTo
+    await task.save()
 
     res.status(200).json({
         message: "Task assigned successfully",
@@ -210,19 +212,19 @@ const assignTask = asyncHandler(async (req, res) => {
 
 })
 
-const getTasks = asyncHandler(async(req,res)=>{
+const getAllAssignedTasks = asyncHandler(async (req, res) => {
 
-    const {userId} = req.params;
+    const { userId } = req.params;
 
-    if(!userId){
-        throw new ApiError(400,"User ID is missing")
+    if (!userId) {
+        throw new ApiError(400, "User ID is missing")
     }
     const tasks = await Task.findAll({
-        where: {assignedTo: userId}
+        where: { assignedTo: userId }
     })
 
-    if(tasks.length == 0){
-        throw new ApiError(404,"No tasks assigned to this user")
+    if (tasks.length == 0) {
+        throw new ApiError(404, "No tasks assigned to this user")
     }
 
     res.status(200).json({
@@ -231,4 +233,39 @@ const getTasks = asyncHandler(async(req,res)=>{
     })
 })
 
-export { create, getAllTasks, getTaskDetails, deleteTask, updateTask, getAllUnassignedTasks, assignTask, getTasks }
+const getAllCreatedTasks = asyncHandler(async (req, res) => {
+
+    const {userId} = req.params;
+
+    if(!userId){
+        throw new ApiError(400,"User ID is missing")
+    }
+
+    const tasks = await Task.findAll({
+        where: {creator: userId},
+        include: [
+            {
+                model: Team,
+                as: 'assignedTeam',
+                attributes: ['id','name','totalMembers']
+            },
+            {
+                model: User,
+                as: 'assignedUser',
+                attributes: ['id','username']
+            }
+        ]
+    })
+
+    if(tasks.length == 0){
+        throw new ApiError(404,"No Tasks created by this user")
+    }
+
+    res.status(200).json({
+        message: "success",
+        tasks: tasks
+    })
+
+})
+
+export { create, getAllTasks, getTaskDetails, deleteTask, updateTask, getAllUnassignedTasks, assignTask, getAllAssignedTasks, getAllCreatedTasks }
