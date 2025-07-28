@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { login } from '../services/authService.js';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
-
+import toast from 'react-hot-toast';
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -30,7 +29,10 @@ function LoginPage() {
       }
     } catch (error) {
       if (error.status === 401) {
-        setErrorMessage("Invalid email or password");
+        toast.error("Invalid email or password");
+      }
+      if(error.status == 404){
+        toast.error("User does not exist")
       }
     } finally {
       setLoading(false);
@@ -83,12 +85,6 @@ function LoginPage() {
                 className="block w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 sm:text-sm"
                 onChange={(e) => setPassword(e.target.value)}
               />
-
-              {errorMessage && (
-                <div className="mt-4 p-2 bg-red-100 border-l-2 border-red-500 text-red-700 rounded">
-                  <p className="font-semibold">{errorMessage}</p>
-                </div>
-              )}
             </div>
           </div>
 

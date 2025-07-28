@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { register } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 function RegisterPage() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('');
@@ -17,11 +18,12 @@ function RegisterPage() {
     try {
       if (password != confirmPassword) {
         setLoading(false)
-        setPasswordError("Password and Confirm Password must be same")
+        toast.error("Password and Confirm Password must be same")
         return;
       }
       await register(username, email, password)
       setLoading(false);
+      toast.success("User Created.")
       await navigate("/login")
 
     } catch (error) {
@@ -117,13 +119,6 @@ function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
-
-            {/* Error Message */}
-            {passwordError && (
-              <div className="mt-4 p-1 bg-red-100 border-l-2 border-red-500 text-red-700">
-                <p className="font-semibold">{passwordError}</p>
-              </div>
-            )}
           </div>
 
           <div>

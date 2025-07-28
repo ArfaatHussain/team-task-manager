@@ -1,10 +1,10 @@
-import axios from "axios"
+import axiosInstance from "./api";
 import { API_URL } from "../Constants"
 
 export const getTeams = async (userId) => {
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.get(`${API_URL}/user/getTeams/${userId}`, {
+        const response = await axiosInstance.get(`${API_URL}/user/getTeams/${userId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -21,7 +21,7 @@ export const getMembers = async (teamId) => {
     try {
         const accessToken = localStorage.getItem("accessToken")
 
-        const response = await axios.get(`${API_URL}/team/getMembers/${teamId}`, {
+        const response = await axiosInstance.get(`${API_URL}/team/getMembers/${teamId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -39,7 +39,7 @@ export const deleteMember = async (teamId, userId) => {
         const user = JSON.parse(localStorage.getItem("user"));
         const accessToken = localStorage.getItem("accessToken");
 
-        const response = await axios.delete(`${API_URL}/team/removeUser`, {
+        const response = await axiosInstance.delete(`${API_URL}/team/removeUser`, {
             data: {
                 teamId,
                 userId,
@@ -60,7 +60,7 @@ export const deleteMember = async (teamId, userId) => {
 export const addMember = async (teamId, userId) => {
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.post(`${API_URL}/team/addUser`, {
+        const response = await axiosInstance.post(`${API_URL}/team/addUser`, {
             teamId,
             userId
         },
@@ -89,7 +89,7 @@ export const deleteTeam = async (teamId) => {
 
         const accessToken = localStorage.getItem("accessToken");
 
-        return await axios.delete(`${API_URL}/team/delete`, {
+        return await axiosInstance.delete(`${API_URL}/team/delete`, {
             data: requestBody,
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -112,7 +112,7 @@ export const createTeam = async(name, description)=>{
             creatorId: user.id
         }
 
-        const response = await axios.post(`${API_URL}/team/create`, requestBody,{
+        const response = await axiosInstance.post(`${API_URL}/team/create`, requestBody,{
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },

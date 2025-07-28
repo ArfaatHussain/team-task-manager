@@ -1,11 +1,11 @@
-import axios from "axios"
+import axiosInstance from "./api"
 import { API_URL } from "../Constants"
 
 export const getAllUnassignedTasks = async () => {
     try {
         const accessToken = localStorage.getItem("accessToken")
         const user = JSON.parse(localStorage.getItem("user"))
-        const response = await axios.get(`${API_URL}/task/getAllUnassignedTasks/${user.id}`, {
+        const response = await axiosInstance.get(`${API_URL}/task/getAllUnassignedTasks/${user.id}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -28,7 +28,7 @@ export const createTask = async (creator, teamId, title, description, dueDate) =
             description,
             dueDate: new Date(dueDate).toISOString()
         }
-        const response = await axios.post(`${API_URL}/task/create`, requestBody, {
+        const response = await axiosInstance.post(`${API_URL}/task/create`, requestBody, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -50,7 +50,7 @@ export const assignTask = async (assignedTo, taskId, teamId) => {
             teamId
         }
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.patch(`${API_URL}/task/assignTask`, requestBody, {
+        const response = await axiosInstance.patch(`${API_URL}/task/assignTask`, requestBody, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -70,7 +70,7 @@ export const deleteTaskFromMember = async (taskId, creatorId) => {
             assignedTo: null
         }
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.patch(`${API_URL}/task/update`, requestBody, {
+        const response = await axiosInstance.patch(`${API_URL}/task/update`, requestBody, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -87,7 +87,7 @@ export const getAllAssignedTasks = async (userId) => {
 
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.get(`${API_URL}/task/getAllAssignedTasks/${userId}`, {
+        const response = await axiosInstance.get(`${API_URL}/task/getAllAssignedTasks/${userId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -103,7 +103,7 @@ export const getCreatedTasks = async () => {
     try {
         const accessToken = localStorage.getItem("accessToken")
         const user = JSON.parse(localStorage.getItem("user"))
-        const response = await axios.get(`${API_URL}/task/getAllCreatedTasks/${user.id}`,{
+        const response = await axiosInstance.get(`${API_URL}/task/getAllCreatedTasks/${user.id}`,{
             headers:{
                 Authorization: `Bearer ${accessToken}`
             },
@@ -124,8 +124,28 @@ export const completeTask = async(taskId)=>{
             taskId,
             status: "completed"
         }
-        const response = await axios.patch(`${API_URL}/task/update`,requestBody,{
+        const response = await axiosInstance.patch(`${API_URL}/task/update`,requestBody,{
             headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+        return response
+    } catch (error) {
+        throw error
+    }
+}
+
+export const deleteTask = async(taskId)=>{
+    try {
+        const user = JSON.parse(localStorage.getItem("user"))
+        const accessToken = localStorage.getItem("accessToken")
+        const response = await axiosInstance.delete(`${API_URL}/task/delete`,{
+            params: {
+                taskId,
+                creatorId: user.id
+            },
+            headers:{
                 Authorization: `Bearer ${accessToken}`
             },
             withCredentials: true

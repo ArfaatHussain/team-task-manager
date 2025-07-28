@@ -83,7 +83,7 @@ const getTaskDetails = asyncHandler(async (req, res) => {
 })
 
 const deleteTask = asyncHandler(async (req, res) => {
-    const { taskId, creatorId } = req.body;
+    const { taskId, creatorId } = req.query;
 
     if (!taskId || !creatorId) {
         throw new ApiError(400, "Provide all fields")
@@ -173,7 +173,7 @@ const getAllUnassignedTasks = asyncHandler(async (req, res) => {
     const { userId } = req.params;
 
     const tasks = await Task.findAll({
-        where: { assignedTo: null, creator: userId }
+        where: { assignedTo: null, creator: userId, status: "Pending" }
     })
 
     if (tasks.length == 0) {

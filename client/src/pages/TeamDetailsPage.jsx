@@ -105,6 +105,7 @@ const TeamDetailsPage = () => {
         console.log('Selected Task ID:', taskId);
         try {
             await assignTask(selectedUserId, taskId, teamId)
+            toast.success("Task Assigned.")
             setShowAssignTaskModal(false)
             setSelectedUserId(null)
             const filterTasks = allUnassignedTasks.filter((task) => task.id != taskId)
@@ -124,8 +125,9 @@ const TeamDetailsPage = () => {
 
         try {
             const response = await createTask(creator, teamId, taskTitle, taskDescription, dueDate)
+            toast.success("Task Created.")
             setShowCreateTaskModal(false)
-            console.log("Response after task creation: ", response.data)
+            
             const newTask = {
                 id: response.data.newTask.id,
                 title: response.data.newTask.title

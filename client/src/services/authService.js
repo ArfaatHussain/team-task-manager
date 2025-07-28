@@ -1,4 +1,4 @@
-import axios from "axios"
+import axiosInstance from "./api"
 import { API_URL } from "../Constants"
 
 export const login = async (email, password) => {
@@ -7,7 +7,7 @@ export const login = async (email, password) => {
             email,
             password
         }
-        const response = await axios.post(`${API_URL}/auth/login`, requestBody)
+        const response = await axiosInstance.post(`${API_URL}/auth/login`, requestBody)
         return response
     } catch (error) {
         console.error(error);
@@ -22,7 +22,7 @@ export const register = async (username, email, password) => {
             email,
             password
         }
-        const response = await axios.post(`${API_URL}/auth/register`, requestBody)
+        const response = await axiosInstance.post(`${API_URL}/auth/register`, requestBody)
         return response
     } catch (error) {
         throw error
@@ -33,7 +33,7 @@ export const logout = async () => {
     try {
         const accessToken = localStorage.getItem("accessToken")
         console.log("AccessToken: ",accessToken)
-        const response = await axios.post(`${API_URL}/auth/logout`, {}, {
+        const response = await axiosInstance.post(`${API_URL}/auth/logout`, {}, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }, 

@@ -167,12 +167,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     res.status(200).json({
         message: "success",
-        data: [
-            {
-                accessToken: accessToken,
-                refreshToken: refreshToken
-            }
-        ]
+        accessToken: accessToken,
+        refreshToken: refreshToken
     })
 
 })

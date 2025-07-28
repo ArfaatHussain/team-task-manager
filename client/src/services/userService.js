@@ -1,10 +1,10 @@
-import axios from "axios"
+import axiosInstance from "./api"
 import { API_URL } from "../Constants"
 
 export const getAllUnassignedUsers = async()=>{
     try {
         const accessToken = localStorage.getItem("accessToken")
-        const response = await axios.get(`${API_URL}/user/getAllUnassignedUsers`,{
+        const response = await axiosInstance.get(`${API_URL}/user/getAllUnassignedUsers`,{
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
@@ -21,7 +21,7 @@ export const getEnrolledTeam = async()=>{
         const accessToken = localStorage.getItem("accessToken")
         const user = JSON.parse(localStorage.getItem("user"))
 
-        const response = await axios.get(`${API_URL}/user/getEnrolledTeam/${user.id}`,{
+        const response = await axiosInstance.get(`${API_URL}/user/getEnrolledTeam/${user.id}`,{
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
