@@ -1,9 +1,14 @@
-import { Sequelize } from "sequelize";
-
-const sequelize = new Sequelize( process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
-  host: 'localhost',
-  dialect: 'postgres'
+import { Sequelize } from 'sequelize';
+const sequelize = new Sequelize(process.env.DB_URI, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  }
 });
+
 
 async function connectDatabase() {
   try {

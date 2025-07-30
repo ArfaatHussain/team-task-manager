@@ -4,10 +4,14 @@ import cookieParser from "cookie-parser";
 
 const app = express()
 
+
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials:true
-}))
+    origin: (origin, callback) => {
+        callback(null, origin);
+    },
+    credentials: true,
+}));
 
 app.use(express.json())
 
@@ -18,9 +22,9 @@ import { teamRouter } from "./routes/team.route.js";
 import { taskRouter } from "./routes/task.route.js";
 import { authRouter } from "./routes/auth.route.js";
 
-app.use("/user",userRouter)
-app.use("/team",teamRouter)
-app.use("/task",taskRouter)
-app.use("/auth",authRouter)
+app.use("/user", userRouter)
+app.use("/team", teamRouter)
+app.use("/task", taskRouter)
+app.use("/auth", authRouter)
 
-export {app}
+export { app }
