@@ -1,1 +1,1 @@
-export const API_URL = "http://192.168.10.4:8000"
+export const API_URL = "https://team-task-manager-backend-production.up.railway.app";

@@ -10,36 +10,42 @@ import toast, { Toaster } from 'react-hot-toast';
 import ViewTasksOfMember from './pages/ViewTasksOfMember';
 import ViewEnrolledTeamDetails from './pages/ViewEnrolledTeamDetail';
 import TasksPage from './pages/TasksPage';
+
 const App = () => {
   return (
     <Router>
       <AppRoutes />
-      <Toaster position="bottom-center" toastOptions={{
-        duration: 2000,
-      }} />
+      <Toaster position="bottom-center" toastOptions={{ duration: 2000 }} />
     </Router>
   );
-}
+};
 
 const AppRoutes = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // null = loading
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
+    const onLoginOrRegister = location.pathname === '/login' || location.pathname === '/register';
+
     if (accessToken) {
       setIsAuthenticated(true);
-      if (location.pathname === '/login' || location.pathname === '/register') {
-        navigate('/');
+      if (onLoginOrRegister) {
+        navigate('/'); // redirect logged-in user away from login/register
       }
     } else {
       setIsAuthenticated(false);
-      if (location.pathname !== '/login' && location.pathname !== '/register') {
-        navigate('/login');
+      if (!onLoginOrRegister) {
+        navigate('/login'); // redirect guest user to login
       }
     }
-  }, [location, navigate]);
+  }, [location.pathname, navigate]);
+
+  if (isAuthenticated === null) {
+    // still checking auth status
+    return null; // or loading spinner
+  }
 
   return (
     <div>
